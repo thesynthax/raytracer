@@ -1,10 +1,12 @@
-pub fn write_ppm(w: i32, h: i32, max_value: i32)
+use crate::vec3::{Color};
+
+fn write_ppm(w: i32, h: i32, max_value: i32)
 {
     println!("P3\n{} {}\n{}", w, h, max_value);
 
     for j in (0..h).rev()
     {
-        for i in (0..w)
+        for i in 0..w
         {
             let r: f32 = i as f32 / w as f32;
             let g: f32 = j as f32 / h as f32;
@@ -18,4 +20,3 @@ pub fn write_ppm(w: i32, h: i32, max_value: i32)
         }
     }
 }
-
