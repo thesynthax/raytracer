@@ -1,46 +1,36 @@
 mod vec3;
 mod ppm;
 mod ray;
+mod sphere;
+mod hittable;
+mod hittable_list;
 
 use vec3::{Vec3, Color, Point};
 use ray::Ray;
+use sphere::Sphere;
+use hittable::*;
+use hittable_list::HittableList;
 
-fn hit_sphere(center: &Point, radius: f32, r: &Ray) -> f32
+fn ray_color(r: &Ray, world: &HittableList) -> Color
 {
-    /*
-        * if (P-C).(P-C)=r^2 where P=A+tB vector and C=center
-        * so expanding,
-        * t^2(B.B) + 2tB.(A-C) + (A-C).(A-C) - r^2 = 0
-        * so if D > 0, then the ray has hit the sphere    
-    */
-    let oc: Vec3 = r.origin() - *center;
-    let a: f32 = Vec3::dot(&r.direction(), &r.direction());
-    let b: f32 = 2.0 * Vec3::dot(&r.direction(), &oc);
-    let c: f32 = Vec3::dot(&oc, &oc) - radius*radius;
+    let mut hitinfo: HitInfo = HitInfo::default();
 
-    let disc = b*b - 4.0*a*c;
-
-    let hit_point = if disc < 0.0 { -1.0 } else { (-b - disc.sqrt()/(2.0*a)) };
-    hit_point
-}
-
-fn ray_color(r: &Ray) -> Color
-{
-    let t: f32 = hit_sphere(&Point::new(0.0, 0.0, -1.0), 0.5, r);
-    if t > 0.0
+    if world.hit(r, 0.0, std::f32::MAX, &mut hitinfo)
     {
-        let n: Vec3 = Vec3::unit_vector(&(r.parametric_point(t) - Vec3::new(0.0,0.0,-1.0)));
-        return (Color::new(n.x()+1.0, n.y()+1.0, n.z()+1.0))/2.0;
+        //return Color::zero();
+        return (Color::new(hitinfo.normal().x()+1.0, hitinfo.normal().y()+1.0, hitinfo.normal().z()+1.0))/2.0
     }
+    else
+    {
+        let unit_direction = Vec3::unit_vector(&(r.direction()));
+        let t: f32 = (unit_direction.y() + 1.0)/2.0;
 
-    let unit_direction = Vec3::unit_vector(&(r.direction()));
-    let t: f32 = (unit_direction.y() + 1.0)/2.0;
+        let white = Color::one(); //Color::zero would be black
+        let blue = Vec3::new(0.5, 0.7, 1.0);
 
-    let white = Color::one(); //Color::zero would be black
-    let blue = Vec3::new(0.5, 0.7, 1.0);
-
-    let blended_value: Color = white + (blue - white) * t;
-    blended_value
+        let blended_value: Color = white + (blue - white) * t;
+        blended_value
+    }
 }
 
 fn main()
@@ -61,6 +51,13 @@ fn main()
     let vertical = Vec3::new(0.0, VIEWPORT_HEIGHT, 0.0);
     let lower_left_corner = origin - horizontal/2.0 - vertical/2.0 - Vec3::new(0.0, 0.0, FOCAL_LENGTH); 
 
+    //World
+    let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
+    hittables.push(Box::new(Sphere::sphere(Point::new(0.0, 0.0, -1.0), 0.5)));
+    hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -5.0, -1.0), 4.2)));
+    let world: HittableList = HittableList::new(hittables);
+
+
     //Render
     println!("P3\n{} {}\n{}", IMAGE_WIDTH, IMAGE_HEIGHT, MAX_VALUE);
     for j in (0..IMAGE_HEIGHT).rev()
@@ -71,7 +68,7 @@ fn main()
             let v = j as f32 / IMAGE_HEIGHT as f32;
 
             let r = Ray::ray(origin, lower_left_corner + horizontal * u + vertical * v);
-            let col = ray_color(&r);
+            let col = ray_color(&r, &world);
 
             let ir = (255.99 * col.r()) as i32;
             let ig = (255.99 * col.g()) as i32;
