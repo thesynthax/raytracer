@@ -33,31 +33,29 @@ impl Hittable for Sphere
 
         let disc = b*b - 4.0*a*c;
         
-        if disc < 0.0
-        {
-            false
-        }
-        else 
+        if disc > 0.0 
         {    
             let sqrtd: f32 = disc.sqrt();
             //t_min < t < t_max where t is the root
             let mut t: f32 = (-b - sqrtd)/(2.0*a);
-
-            if (t > t_max || t < t_min)
+            if t < t_max && t > t_min
             {
-                t = (-b + sqrtd)/(2.0*a);
-                if (t > t_max || t < t_min)
-                {
-                    false;
-                }
+                hit_info.set_t(t);
+                hit_info.set_p(r.parametric_point(t));
+                hit_info.set_front_normal(r, &((hit_info.p() - self.center) / self.radius));
+                return true;
             }
 
-            hit_info.set_t(t);
-            hit_info.set_p(r.parametric_point(t));
-            let outward_normal: Vec3 = (hit_info.p() - self.center)/self.radius;
-            hit_info.set_front_normal(r, &outward_normal);
+            t = (-b + sqrtd)/(2.0*a);
+            if t < t_max && t > t_min
+            {
+                hit_info.set_t(t);
+                hit_info.set_p(r.parametric_point(t));
+                hit_info.set_front_normal(r, &((hit_info.p() - self.center) / self.radius));
+                return true;
+            }
 
-            true
         }
+        return false;
     }
 }

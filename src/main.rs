@@ -54,7 +54,7 @@ fn main()
     //World
     let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, 0.0, -1.0), 0.5)));
-    hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -5.0, -1.0), 4.2)));
+    hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -100.5, -1.0), 100.0)));
     let world: HittableList = HittableList::new(hittables);
 
 

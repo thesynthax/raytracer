@@ -22,15 +22,17 @@ impl Hittable for HittableList
         let mut hit: bool = false;
         let mut closest_hit = t_max;
 
-        for hittables in &self.hittables
+        for hittable in &self.hittables
         {
-            if hittables.hit(r, t_min, closest_hit, &mut temp)
+            if hittable.hit(r, t_min, closest_hit, &mut temp)
             {
                 hit = true;
                 closest_hit = temp.t();
                 hit_info.set_t(temp.t());
                 hit_info.set_p(temp.p());
                 hit_info.set_normal(temp.normal());
+                //let outward_normal: Vec3 = (hit_info.p() - hittable.&hittable)
+                //hit_info.set_front_normal(r, &temp.normal());
                 //hit_info = &mut temp;
             }
         }
