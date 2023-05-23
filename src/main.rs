@@ -1,15 +1,22 @@
 mod vec3;
 mod ppm;
 mod ray;
+mod color;
 mod sphere;
 mod hittable;
 mod hittable_list;
+mod camera;
 
+use Raytracer::*;
 use vec3::{Vec3, Color, Point};
 use ray::Ray;
 use sphere::Sphere;
 use hittable::*;
 use hittable_list::HittableList;
+use camera::Camera;
+use rand::prelude::*;
+
+use crate::color::write_color;
 
 fn ray_color(r: &Ray, world: &HittableList) -> Color
 {
@@ -40,16 +47,10 @@ fn main()
     const IMAGE_WIDTH: i32 = 400;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
     const MAX_VALUE: i32 = 255;
+    const SAMPLES_PER_PIXEL: i32 = 100;
 
     //Camera
-    const VIEWPORT_HEIGHT: f32 = 2.0;
-    const VIEWPORT_WIDTH: f32 = ASPECT_RATIO * VIEWPORT_HEIGHT;
-    const FOCAL_LENGTH: f32 = 1.0;
-
-    let origin = Point::new(0.0, 0.0, 0.0);
-    let horizontal = Vec3::new(VIEWPORT_WIDTH, 0.0, 0.0);
-    let vertical = Vec3::new(0.0, VIEWPORT_HEIGHT, 0.0);
-    let lower_left_corner = origin - horizontal/2.0 - vertical/2.0 - Vec3::new(0.0, 0.0, FOCAL_LENGTH); 
+    let cam: Camera = Camera::camera();
 
     //World
     let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
@@ -57,6 +58,8 @@ fn main()
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -100.5, -1.0), 100.0)));
     let world: HittableList = HittableList::new(hittables);
 
+    //Random Number Generator
+    let mut rng = rand::thread_rng();
 
     //Render
     println!("P3\n{} {}\n{}", IMAGE_WIDTH, IMAGE_HEIGHT, MAX_VALUE);
@@ -64,17 +67,17 @@ fn main()
     {
         for i in 0..IMAGE_WIDTH 
         {
-            let u = i as f32 / IMAGE_WIDTH as f32;
-            let v = j as f32 / IMAGE_HEIGHT as f32;
+            let mut pixel_color: Color = Color::zero();
 
-            let r = Ray::ray(origin, lower_left_corner + horizontal * u + vertical * v);
-            let col = ray_color(&r, &world);
+            for _s in 0..SAMPLES_PER_PIXEL
+            {
+                let u = (i as f32 + rng.gen::<f32>()) / IMAGE_WIDTH as f32;
+                let v = (j as f32 + rng.gen::<f32>()) / IMAGE_HEIGHT as f32;
 
-            let ir = (255.99 * col.r()) as i32;
-            let ig = (255.99 * col.g()) as i32;
-            let ib = (255.99 * col.b()) as i32;
-
-            println!("{} {} {}", ir, ig, ib);
+                let r: Ray = cam.get_ray(u, v);
+                pixel_color += ray_color(&r, &world)
+            }
+            write_color(pixel_color, SAMPLES_PER_PIXEL);
         }
     }
 }

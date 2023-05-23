@@ -3,29 +3,29 @@ use crate::vec3::{Vec3, Point};
 #[derive(Debug, Copy, Clone)]
 pub struct Ray
 {
-    A: Vec3,
-    B: Vec3
+    a: Vec3,
+    b: Vec3
 }
 
 impl Ray
 {
     pub fn ray(a: Vec3, b: Vec3) -> Ray
     {
-        Ray { A: a, B: b }
+        Ray { a, b }
     }
 
     pub fn origin(self) -> Point
     {
-        self.A
+        self.a
     }
 
     pub fn direction(self) -> Vec3
     {
-        self.B
+        self.b
     }
 
     pub fn parametric_point(self, t: f32) -> Point
     {
-        self.A + self.B*t
+        self.a + self.b*t
     }
 }
