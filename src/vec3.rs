@@ -108,9 +108,9 @@ impl Vec3
         }
     }
 
-    pub fn random_unit_vector(v: Vec3) -> Vec3
+    pub fn random_unit_vector() -> Vec3
     {
-        Self::unit_vector(&v)
+        Self::unit_vector(&Self::random_in_unit_sphere())
     }
 }
 
