@@ -28,7 +28,7 @@ fn ray_color(r: &Ray, world: &HittableList, depth: i32) -> Color
     //Hittables (spheres etc)
     if world.hit(r, 0.0, std::f32::MAX, &mut hitinfo)    
     {
-        let target: Point = hitinfo.p() + hitinfo.normal() + Vec3::random_in_unit_sphere();
+        let target: Point = hitinfo.p() + hitinfo.normal() + Vec3::random_unit_vector();
         return ray_color(&Ray::ray(hitinfo.p(), target - hitinfo.p()), world, depth - 1) / 2.0;
         //return (Color::new(hitinfo.normal().x()+1.0, hitinfo.normal().y()+1.0, hitinfo.normal().z()+1.0))/2.0
     }

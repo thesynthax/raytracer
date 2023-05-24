@@ -107,6 +107,11 @@ impl Vec3
             }
         }
     }
+
+    pub fn random_unit_vector(v: Vec3) -> Vec3
+    {
+        Self::unit_vector(&v)
+    }
 }
 
 impl ops::Add for Vec3 
