@@ -1,5 +1,5 @@
 use std::ops;
-
+use rand::prelude::*;
 
 #[derive(Default, Debug, Copy, Clone, PartialEq)]
 pub struct Vec3
@@ -87,6 +87,24 @@ impl Vec3
                 v1.e[2] * v2.e[0] - v1.e[0] * v2.e[2],
                 v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0],
             ]
+        }
+    }
+
+    pub fn random() -> Vec3
+    {
+        let mut rng = rand::thread_rng();
+        Vec3 { e: [rng.gen::<f32>(), rng.gen::<f32>(), rng.gen::<f32>()] }
+    }
+
+    pub fn random_in_unit_sphere() -> Vec3
+    {
+        loop 
+        {
+            let p: Vec3 = (Self::random() * 2.0) - Self::one();
+            if p.length_squared() < 1.0 
+            {
+                return p;
+            }
         }
     }
 }
