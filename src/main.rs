@@ -1,5 +1,4 @@
 mod vec3;
-mod ppm;
 mod ray;
 mod color;
 mod sphere;
@@ -7,7 +6,6 @@ mod hittable;
 mod hittable_list;
 mod camera;
 
-use Raytracer::*;
 use vec3::{Vec3, Color, Point};
 use ray::Ray;
 use sphere::Sphere;
@@ -56,6 +54,8 @@ fn main()
     let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, 0.0, -1.0), 0.5)));
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -100.5, -1.0), 100.0)));
+    //hittables.push(Box::new(Sphere::sphere(Point::new(1.4, 0.2, -1.4), 0.4)));
+    //hittables.push(Box::new(Sphere::sphere(Point::new(-1.4, -0.1, -1.2), 0.3)));
     let world: HittableList = HittableList::new(hittables);
 
     //Random Number Generator

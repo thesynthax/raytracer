@@ -53,7 +53,7 @@ impl HitInfo
 
 pub trait Hittable 
 {
-    fn hit(&self, r: &Ray, t_min: f32, t_max: f32, hit_info: &mut HitInfo) -> bool
+    fn hit(&self, _r: &Ray, _t_min: f32, _t_max: f32, _hit_info: &mut HitInfo) -> bool
     {
         false
     }

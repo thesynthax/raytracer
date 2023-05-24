@@ -1,5 +1,5 @@
 use crate::vec3::Color;
-use Raytracer::clamp;
+use raytracer::clamp;
 
 pub fn write_color(pixel_color: Color, samples: i32)
 {
