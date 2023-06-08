@@ -1,18 +1,33 @@
-use crate::vec3::{Vec3, Point};
+use crate::vec3::{Vec3, Point, Color};
 use crate::ray::Ray;
+use crate::material::Material;
 
-#[derive(Default)]
+pub trait Hittable 
+{
+    fn hit(&self, _r: &Ray, _t_min: f32, _t_max: f32, _hit_info: &mut HitInfo) -> bool;
+}
+
+//#[derive(Default)]
 pub struct HitInfo 
 {
-    t: f32,
-    p: Point,
-    normal: Vec3,
-    front_face: bool
+    pub t: f32,
+    pub p: Point,
+    pub normal: Vec3,
+    pub front_face: bool,
+    pub mat: Material
+}
+
+impl Default for HitInfo
+{
+    fn default() -> Self 
+    {
+        HitInfo { t: 0.0, p: Point::zero(), normal: Vec3::zero(), front_face: false, mat: Material::Lambertian { albedo: Color::zero() } }    
+    }
 }
 
 impl HitInfo 
 {
-    pub fn p(&self) -> Point 
+    /*pub fn p(&self) -> Point 
     {
         self.p
     }
@@ -27,6 +42,10 @@ impl HitInfo
     pub fn front_face(&self) -> bool
     {
         self.front_face
+    }
+    pub fn mat(&self) -> Material
+    {
+        self.mat
     }
     pub fn set_p(&mut self, val: Point)
     {
@@ -44,17 +63,15 @@ impl HitInfo
     {
         self.front_face = val
     }
+    
+    pub fn set_material(&mut self, val: Material)
+    {
+        self.mat = val
+    }*/
     pub fn set_front_normal(&mut self, r: &Ray, outward_normal: &Vec3)
     {
-        self.set_front_face((Vec3::dot(outward_normal, &r.direction())) < 0.0);
-        self.set_normal(if self.front_face() { *outward_normal } else { -(*outward_normal) });
+        self.front_face = Vec3::dot(outward_normal, &r.direction()) < 0.0;
+        self.normal = if self.front_face { *outward_normal } else { -(*outward_normal) };
     }
 }
 
-pub trait Hittable 
-{
-    fn hit(&self, _r: &Ray, _t_min: f32, _t_max: f32, _hit_info: &mut HitInfo) -> bool
-    {
-        false
-    }
-}

@@ -5,6 +5,7 @@ mod sphere;
 mod hittable;
 mod hittable_list;
 mod camera;
+mod material;
 
 use vec3::{Vec3, Color, Point};
 use ray::Ray;
@@ -12,6 +13,7 @@ use sphere::Sphere;
 use hittable::*;
 use hittable_list::HittableList;
 use camera::Camera;
+use material::*;
 use rand::prelude::*;
 
 use crate::color::write_color;
@@ -26,11 +28,22 @@ fn ray_color(r: &Ray, world: &HittableList, depth: i32) -> Color
     }
 
     //Hittables (spheres etc)
-    if world.hit(r, 0.0, std::f32::MAX, &mut hitinfo)    
+    if world.hit(r, 0.001, std::f32::MAX, &mut hitinfo)    
     {
-        let target: Point = hitinfo.p() + hitinfo.normal() + Vec3::random_unit_vector();
-        return ray_color(&Ray::ray(hitinfo.p(), target - hitinfo.p()), world, depth - 1) / 2.0;
-        //return (Color::new(hitinfo.normal().x()+1.0, hitinfo.normal().y()+1.0, hitinfo.normal().z()+1.0))/2.0
+        //let target: Point = hitinfo.p() + Vec3::random_in_hemisphere(hitinfo.normal());
+        //return ray_color(&Ray::ray(hitinfo.p(), target - hitinfo.p()), world, depth - 1) / 2.0;
+
+        let mut scattered: Ray = Ray::ray(Vec3::default(), Vec3::default());
+        let mut attenuation: Color = Color::default();
+
+        if scatter(&hitinfo.mat, r, &hitinfo, &mut attenuation, &mut scattered)
+        {
+            return attenuation * ray_color(&scattered, world, depth-1);
+        }
+        else
+        {
+            return Color::zero(); 
+        }
     }
 
     //Sky
@@ -59,8 +72,8 @@ fn main()
 
     //World
     let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
-    hittables.push(Box::new(Sphere::sphere(Point::new(0.0, 0.0, -1.0), 0.5)));
-    hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -100.5, -1.0), 100.0)));
+    hittables.push(Box::new(Sphere::sphere(Point::new(0.0, 0.0, -1.0), 0.5, Material::Lambertian { albedo: Color::new(0.8, 0.3, 0.3) })));
+    hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -100.5, -1.0), 100.0, Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) })));
     //hittables.push(Box::new(Sphere::sphere(Point::new(1.4, 0.2, -1.4), 0.4)));
     //hittables.push(Box::new(Sphere::sphere(Point::new(-1.4, -0.1, -1.2), 0.3)));
     let world: HittableList = HittableList::new(hittables);

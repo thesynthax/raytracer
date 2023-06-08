@@ -27,10 +27,10 @@ impl Hittable for HittableList
             if hittable.hit(r, t_min, closest_hit, &mut temp)
             {
                 hit = true;
-                closest_hit = temp.t();
-                hit_info.set_t(temp.t());
-                hit_info.set_p(temp.p());
-                hit_info.set_normal(temp.normal());
+                closest_hit = temp.t;
+                hit_info.t = temp.t;
+                hit_info.p = temp.p;
+                hit_info.normal = temp.normal;
                 //let outward_normal: Vec3 = (hit_info.p() - hittable.&hittable)
                 //hit_info.set_front_normal(r, &temp.normal());
                 //hit_info = &mut temp;

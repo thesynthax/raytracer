@@ -1,18 +1,20 @@
 use crate::hittable::*;
+use crate::material::*;
 use crate::vec3::{Vec3, Point};
 use crate::ray::Ray;
 
 pub struct Sphere
 {
     center: Point,
-    radius: f32
+    radius: f32,
+    mat: Material
 } 
 
 impl Sphere
 {
-    pub fn sphere(center: Point, radius: f32) -> Sphere
+    pub fn sphere(center: Point, radius: f32, mat: Material) -> Sphere
     {
-        Sphere { center, radius }
+        Sphere { center, radius, mat }
     }
 }
 
@@ -40,18 +42,20 @@ impl Hittable for Sphere
             let mut t: f32 = (-b - sqrtd)/(2.0*a);
             if t < t_max && t > t_min
             {
-                hit_info.set_t(t);
-                hit_info.set_p(r.parametric_point(t));
-                hit_info.set_front_normal(r, &((hit_info.p() - self.center) / self.radius));
+                hit_info.t = t;
+                hit_info.p = r.parametric_point(t);
+                hit_info.set_front_normal(r, &((hit_info.p - self.center) / self.radius));
+                hit_info.mat = self.mat;
                 return true;
             }
 
             t = (-b + sqrtd)/(2.0*a);
             if t < t_max && t > t_min
             {
-                hit_info.set_t(t);
-                hit_info.set_p(r.parametric_point(t));
-                hit_info.set_front_normal(r, &((hit_info.p() - self.center) / self.radius));
+                hit_info.t = t;
+                hit_info.p = r.parametric_point(t);
+                hit_info.set_front_normal(r, &((hit_info.p - self.center) / self.radius));
+                hit_info.mat = self.mat;
                 return true;
             }
 
