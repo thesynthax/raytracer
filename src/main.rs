@@ -74,8 +74,8 @@ fn main()
     let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, 0.0, -1.0), 0.5, Material::Lambertian { albedo: Color::new(0.8, 0.3, 0.3) })));
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -100.5, -1.0), 100.0, Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) })));
-    //hittables.push(Box::new(Sphere::sphere(Point::new(1.4, 0.2, -1.4), 0.4)));
-    //hittables.push(Box::new(Sphere::sphere(Point::new(-1.4, -0.1, -1.2), 0.3)));
+    hittables.push(Box::new(Sphere::sphere(Point::new(1.4, 0.2, -1.4), 0.4, Material::Metal { albedo: Color::new(0.8, 0.8, 0.8), fuzz: 0.2 })));
+    hittables.push(Box::new(Sphere::sphere(Point::new(-1.4, -0.1, -1.2), 0.3, Material::Metal { albedo: Color::new(0.8, 0.6, 0.2), fuzz: 0.5 })));
     let world: HittableList = HittableList::new(hittables);
 
     //Random Number Generator

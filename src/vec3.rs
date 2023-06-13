@@ -125,6 +125,11 @@ impl Vec3
         let a: f32 = 0.00000001;
         return (self.e[0] < a) && (self.e[1] < a) && (self.e[2] < a);
     }
+
+    pub fn reflect(v: Vec3, n: Vec3) -> Vec3
+    {
+        return v - n * Self::dot(&v, &n) * 2.0;
+    }
 }
 
 impl ops::Add for Vec3 
