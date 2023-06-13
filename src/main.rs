@@ -40,10 +40,7 @@ fn ray_color(r: &Ray, world: &HittableList, depth: i32) -> Color
         {
             return ray_color(&scattered, world, depth-1) * attenuation;
         }
-        else
-        {
-            return Color::zero(); 
-        }
+        return Color::zero(); 
     }
 
     //Sky
@@ -68,14 +65,15 @@ fn main()
     const MAX_DEPTH: i32 = 50;
 
     //Camera
-    let cam: Camera = Camera::camera();
+    let cam: Camera = Camera::camera(90.0, 16.0/9.0, Point::new(-0.0, 0.0, 0.0), Point::new(0.0, 0.0, -1.0), Vec3::new(0.0, 1.0, 0.0));
 
     //World
     let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, 0.0, -1.0), 0.5, Material::Lambertian { albedo: Color::new(0.8, 0.3, 0.3) })));
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -100.5, -1.0), 100.0, Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) })));
     hittables.push(Box::new(Sphere::sphere(Point::new(1.4, 0.2, -1.4), 0.4, Material::Metal { albedo: Color::new(0.8, 0.8, 0.8), fuzz: 0.2 })));
-    hittables.push(Box::new(Sphere::sphere(Point::new(-1.4, -0.1, -1.2), 0.3, Material::Metal { albedo: Color::new(0.8, 0.6, 0.2), fuzz: 0.5 })));
+    hittables.push(Box::new(Sphere::sphere(Point::new(-1.0, 0.0, -1.0), -0.5, Material::Dielectric { ref_index: 1.5 })));
+    hittables.push(Box::new(Sphere::sphere(Point::new(0.1, 0.1, -0.4), 0.1, Material::Metal { albedo: Color::new(0.3, 0.4, 0.2), fuzz: 0.0 })));
     let world: HittableList = HittableList::new(hittables);
 
     //Random Number Generator

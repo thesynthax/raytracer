@@ -1,5 +1,6 @@
 use std::ops;
 use rand::prelude::*;
+use raytracer::*;
 
 #[derive(Default, Debug, Copy, Clone, PartialEq)]
 pub struct Vec3
@@ -129,6 +130,28 @@ impl Vec3
     pub fn reflect(v: Vec3, n: Vec3) -> Vec3
     {
         return v - n * Self::dot(&v, &n) * 2.0;
+    }
+
+    /*pub fn refract(v: &Vec3, n: &Vec3, ni_over_nt: f32, refracted: &mut Vec3) -> bool 
+    {
+        let uv = Vec3::unit_vector(v);
+        let dt = Vec3::dot(&uv, n);
+        let discriminant = 1.0 - ni_over_nt * ni_over_nt * (1.0 - dt * dt);
+
+        if discriminant > 0.0 
+        {
+            *refracted =  (uv - *n * dt) * ni_over_nt - *n * discriminant.sqrt();
+            return true;
+        } 
+        return false;
+    }*/
+
+    pub fn refract(uv: &Vec3, n: &Vec3, ni_over_nt: f32) -> Vec3
+    {
+        let costheta = min(Vec3::dot(&(-(*uv)), n), 1.0);
+        let r_out_perp = (*uv + *n * costheta) * ni_over_nt;
+        let r_out_para = *n * (-(1.0 - r_out_perp.length_squared()).abs().sqrt()); 
+        r_out_perp + r_out_para
     }
 }
 
