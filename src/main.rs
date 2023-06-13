@@ -20,25 +20,25 @@ use crate::color::write_color;
 
 fn ray_color(r: &Ray, world: &HittableList, depth: i32) -> Color
 {
-    let mut hitinfo: HitInfo = HitInfo::default();
+    //let mut hitinfo: HitInfo = HitInfo::default();
 
-    if depth < 0
+    /*if depth < 0
     {
         return Color::zero();
-    }
+    }*/
 
     //Hittables (spheres etc)
-    if world.hit(r, 0.001, std::f32::MAX, &mut hitinfo)    
+    if let Some(i) = world.hit(r, 0.001, std::f32::MAX)    
     {
-        //let target: Point = hitinfo.p() + Vec3::random_in_hemisphere(hitinfo.normal());
-        //return ray_color(&Ray::ray(hitinfo.p(), target - hitinfo.p()), world, depth - 1) / 2.0;
+        //let target: Point = i.p + Vec3::random_in_hemisphere(i.normal);
+        //return ray_color(&Ray::ray(i.p, target - i.p), world, depth - 1) / 2.0;
 
         let mut scattered: Ray = Ray::ray(Vec3::default(), Vec3::default());
         let mut attenuation: Color = Color::default();
 
-        if scatter(&hitinfo.mat, r, &hitinfo, &mut attenuation, &mut scattered)
+        if depth > 0 && scatter(&i.mat, r, &i, &mut attenuation, &mut scattered)
         {
-            return attenuation * ray_color(&scattered, world, depth-1);
+            return ray_color(&scattered, world, depth-1) * attenuation;
         }
         else
         {

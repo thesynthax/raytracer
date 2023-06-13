@@ -20,7 +20,7 @@ impl Sphere
 
 impl Hittable for Sphere
 {
-    fn hit(&self, r: &Ray, t_min: f32, t_max: f32, hit_info: &mut HitInfo) -> bool
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<HitInfo>
     {
         /*
             * if (P-C).(P-C)=r^2 where P=A+tB vector and C=center
@@ -42,24 +42,24 @@ impl Hittable for Sphere
             let mut t: f32 = (-b - sqrtd)/(2.0*a);
             if t < t_max && t > t_min
             {
-                hit_info.t = t;
-                hit_info.p = r.parametric_point(t);
-                hit_info.set_front_normal(r, &((hit_info.p - self.center) / self.radius));
-                hit_info.mat = self.mat;
-                return true;
+                //hit_info.t = t;
+                //hit_info.p = r.parametric_point(t);
+                //hit_info.set_front_normal(r, &((hit_info.p - self.center) / self.radius));
+                //hit_info.mat = self.mat;
+                return Some(HitInfo { t, p: r.parametric_point(t), normal: ((r.parametric_point(t)-self.center)/self.radius), mat: self.mat })
             }
 
             t = (-b + sqrtd)/(2.0*a);
             if t < t_max && t > t_min
             {
-                hit_info.t = t;
-                hit_info.p = r.parametric_point(t);
-                hit_info.set_front_normal(r, &((hit_info.p - self.center) / self.radius));
-                hit_info.mat = self.mat;
-                return true;
+                //hit_info.t = t;
+                //hit_info.p = r.parametric_point(t);
+                //hit_info.set_front_normal(r, &((hit_info.p - self.center) / self.radius));
+                //hit_info.mat = self.mat;
+                return Some(HitInfo { t, p: r.parametric_point(t), normal: ((r.parametric_point(t)-self.center)/self.radius), mat: self.mat })
             }
 
         }
-        return false;
+        return None;
     }
 }

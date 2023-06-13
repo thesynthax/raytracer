@@ -16,15 +16,15 @@ impl HittableList
 
 impl Hittable for HittableList
 {
-    fn hit(&self, r: &Ray, t_min: f32, t_max: f32, hit_info: &mut HitInfo) -> bool
+    fn hit(&self, r: &Ray, t_min: f32, t_max: f32) -> Option<HitInfo>
     {
-        let mut temp: HitInfo = HitInfo::default();
-        let mut hit: bool = false;
+        let mut hitInfo: Option<HitInfo> = None;
+        //let mut hit: bool = false;
         let mut closest_hit = t_max;
 
         for hittable in &self.hittables
         {
-            if hittable.hit(r, t_min, closest_hit, &mut temp)
+            /*if hittable.hit(r, t_min, closest_hit)
             {
                 hit = true;
                 closest_hit = temp.t;
@@ -34,8 +34,13 @@ impl Hittable for HittableList
                 //let outward_normal: Vec3 = (hit_info.p() - hittable.&hittable)
                 //hit_info.set_front_normal(r, &temp.normal());
                 //hit_info = &mut temp;
+            }*/
+            if let Some(i) = hittable.hit(r, t_min, closest_hit)
+            {
+                closest_hit = i.t;
+                hitInfo = Some(i);
             }
         }
-        hit
+        hitInfo
     }
 }

@@ -32,6 +32,8 @@ pub fn scatter(mat: &Material, ray_in: &Ray, hit_info: &HitInfo, att: &mut Color
 
             *scattered = Ray::ray(hit_info.p(), scatter_direction);*/
             let target = hit_info.p + hit_info.normal + Vec3::random_in_unit_sphere();        
+            //let target = hit_info.p + Vec3::random_in_hemisphere(hit_info.normal);
+            //let target = hit_info.normal + Vec3::random_unit_vector();
             *scattered = Ray::ray(hit_info.p, target - hit_info.p);
             *att = albedo;
             return true;

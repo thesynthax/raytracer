@@ -4,7 +4,7 @@ use crate::material::Material;
 
 pub trait Hittable 
 {
-    fn hit(&self, _r: &Ray, _t_min: f32, _t_max: f32, _hit_info: &mut HitInfo) -> bool;
+    fn hit(&self, _r: &Ray, _t_min: f32, _t_max: f32) -> Option<HitInfo>;
 }
 
 //#[derive(Default)]
@@ -13,17 +13,17 @@ pub struct HitInfo
     pub t: f32,
     pub p: Point,
     pub normal: Vec3,
-    pub front_face: bool,
+    //front_face: bool,
     pub mat: Material
 }
 
-impl Default for HitInfo
+/*impl Default for HitInfo
 {
     fn default() -> Self 
     {
         HitInfo { t: 0.0, p: Point::zero(), normal: Vec3::zero(), front_face: false, mat: Material::Lambertian { albedo: Color::zero() } }    
     }
-}
+}*/
 
 impl HitInfo 
 {
@@ -68,10 +68,10 @@ impl HitInfo
     {
         self.mat = val
     }*/
-    pub fn set_front_normal(&mut self, r: &Ray, outward_normal: &Vec3)
+    /*pub fn set_front_normal(&mut self, r: &Ray, outward_normal: &Vec3)
     {
         self.front_face = Vec3::dot(outward_normal, &r.direction()) < 0.0;
         self.normal = if self.front_face { *outward_normal } else { -(*outward_normal) };
-    }
+    }*/
 }
 
