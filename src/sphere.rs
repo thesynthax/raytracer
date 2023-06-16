@@ -2,6 +2,7 @@ use crate::hittable::*;
 use crate::material::*;
 use crate::vec3::{Vec3, Point};
 use crate::ray::Ray;
+use crate::aabb::*;
 
 pub struct Sphere
 {
@@ -61,5 +62,11 @@ impl Hittable for Sphere
 
         }
         return None;
+    }
+
+    fn bounding_box(&self, output_box: &mut AABB) -> bool
+    {
+        *output_box = AABB::aabb(self.center - Vec3::new(self.radius, self.radius, self.radius), self.center + Vec3::new(self.radius, self.radius, self.radius));
+        return true;
     }
 }

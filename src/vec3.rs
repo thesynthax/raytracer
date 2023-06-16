@@ -18,6 +18,11 @@ impl Vec3
         } 
     }
 
+    pub fn this(self) -> [f32; 3]
+    {
+        self.e
+    }
+
     pub fn x(self) -> f32
     {
         self.e[0]

@@ -1,10 +1,12 @@
 use crate::vec3::{Vec3, Point, Color};
 use crate::ray::Ray;
 use crate::material::Material;
+use crate::aabb::*;
 
 pub trait Hittable 
 {
     fn hit(&self, _r: &Ray, _t_min: f32, _t_max: f32) -> Option<HitInfo>;
+    fn bounding_box(&self, output_box: &mut AABB) -> bool;
 }
 
 //#[derive(Default)]
