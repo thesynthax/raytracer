@@ -101,24 +101,57 @@ fn cornell_box() -> HittableList
     HittableList::new(hittables)
 }
 
+fn final_scene() -> HittableList
+{
+    let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
+    let red = Material::Lambertian { albedo: Color::new(0.65, 0.05, 0.05) };
+    let green = Material::Lambertian { albedo: Color::new(0.12, 0.45, 0.15) };
+    let white = Material::Lambertian { albedo: Color::new(0.73, 0.73, 0.73) };
+    let light = Material::Emissive { light_color: Color::one()*7.0 };
+    let metal_shiny = Material::Metal { albedo: Color::one(), fuzz: 0.0 };
+    let metal_fuzzy = Material::Metal { albedo: Color::one(), fuzz: 0.6 };
+    let glass = Material::Dielectric { ref_index: 1.5 };
+
+    for i in 0..20
+    {
+        for j in 0..20
+        {
+            let width = 100.0;
+            let x0 = -1000.0 + i as f32 *width;
+            let z0 = -1000.0 + j as f32 *width;
+            let y0 = 0.0;
+            let x1 = x0 + width;
+            let y1 = rand::thread_rng().gen::<f32>() * 100.0;
+            let z1 = z0 + width;
+
+            hittables.push(Box::new(Cuboid::cuboid(Point::new(x0, y0, z0), Point::new(x1, y1, z1), green)));
+        }
+    }
+
+    hittables.push(Box::new(ZXRect::zxrect(123.0, 423.0, 147.0, 412.0, 554.0, light)));
+    hittables.push(Box::new(Sphere::sphere(Point::new(260.0, 150.0, 45.0), 50.0, glass)));
+    hittables.push(Box::new(Sphere::sphere(Point::new(0.0, 150.0, 45.0), 50.0, metal_fuzzy)));
+    hittables.push(Box::new(Sphere::sphere(Point::new(400.0, 200.0, 400.0), 50.0, metal_shiny)));
+
+    HittableList::new(hittables)
+}
+
 fn main()
 {
     //Image
-    //const ASPECT_RATIO: f32 = 1.0;
-    //const IMAGE_WIDTH: i32 = 400;
-    const ASPECT_RATIO: f32 = 16.0/9.0;
+    const ASPECT_RATIO: f32 = 1.0;
     const IMAGE_WIDTH: i32 = 400;
     const IMAGE_HEIGHT: i32 = (IMAGE_WIDTH as f32 / ASPECT_RATIO) as i32;
     const MAX_VALUE: i32 = 255;
-    const SAMPLES_PER_PIXEL: i32 = 200;
+    const SAMPLES_PER_PIXEL: i32 = 1000;
     const MAX_DEPTH: i32 = 50;
 
     //Camera
-    let cam: Camera = Camera::camera(90.0, ASPECT_RATIO, Point::new(0.2, 0.5, 0.0), Point::new(0.0, 0.0, -1.0), Vec3::new(0.0, 1.0, 0.0));
-    //let cam: Camera = Camera::camera(40.0, 1.0, Point::new(278.0, 278.0, -800.0), Point::new(278.0, 278.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
+    //let cam: Camera = Camera::camera(90.0, ASPECT_RATIO, Point::new(0.0, 0.0, 0.0), Point::new(0.0, 0.0, -1.0), Vec3::new(0.0, 1.0, 0.0));
+    let cam: Camera = Camera::camera(40.0, ASPECT_RATIO, Point::new(478.0, 278.0, -600.0), Point::new(278.0, 278.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
 
     //World
-    let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
+    /*let mut hittables: Vec<Box<dyn Hittable>> = Vec::new();
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, 0.0, -1.0), 0.5, Material::Lambertian { albedo: Color::new(0.8, 0.3, 0.3) })));
     hittables.push(Box::new(Sphere::sphere(Point::new(0.0, -100.5, -1.0), 100.0, Material::Lambertian { albedo: Color::new(0.8, 0.8, 0.0) })));
     hittables.push(Box::new(Sphere::sphere(Point::new(1.4, 0.2, -1.4), 0.4, Material::Metal { albedo: Color::new(0.8, 0.8, 0.8), fuzz: 0.2 })));
@@ -127,7 +160,9 @@ fn main()
     hittables.push(Box::new(XYRect::xyrect(0.0, 2.0, -1.0, 1.0, -1.7, Material::Emissive { light_color: Color::one() } )));
     hittables.push(Box::new(Cuboid::cuboid(Point::new(-1.5, 0.0, -2.0), Point::new(-0.5, 1.0, -1.0), Material::Lambertian { albedo: Color::one() })));
     let world: HittableList = HittableList::new(hittables);
-    //let world = cornell_box();
+    //let world = cornell_box();*/
+
+    let world = final_scene();
 
     //Background
     let bg = Color::new(0.05,0.1,0.2);
