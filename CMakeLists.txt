@@ -15,8 +15,8 @@ file(GLOB raytracer_src CONFIGURE_DEPENDS
 add_subdirectory(external/glfw)
 add_subdirectory(external/glm)
 
-add_library(glad STATIC external/glad/glad.c)
-target_include_directories(glad PUBLIC external/glad)
+add_library(glad STATIC external/glad/src/glad.c)
+target_include_directories(glad PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}/external/glad/include)
 
 add_executable(raytracer ${raytracer_src})
 
