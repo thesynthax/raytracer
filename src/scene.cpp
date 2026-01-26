@@ -1,5 +1,4 @@
 #include "scene.h"
-#include "glm/ext/quaternion_geometric.hpp"
 
 namespace Scene {
 

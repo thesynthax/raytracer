@@ -1,6 +1,6 @@
 #include <iostream>
 #include "gui.h"
-#include "glad/glad.h"
+#include <glad/glad.h>
 #include "imgui/imgui.h"
 #include <string>
 #include <chrono>

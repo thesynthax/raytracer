@@ -6,14 +6,14 @@
 #include <cmath>
 #include <vector>
 #include "random.h"
-#include "glfw/glfw3.h"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/common.hpp"
-#include "glm/ext/matrix_float2x2.hpp"
-#include "glm/gtx/string_cast.hpp"
-#include "glm/gtx/vec_swizzle.hpp"
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/common.hpp>
+#include <glm/ext/matrix_float2x2.hpp>
+#include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/vec_swizzle.hpp>
 
 namespace Scene {
 

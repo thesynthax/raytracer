@@ -10,19 +10,21 @@ file(GLOB raytracer_src CONFIGURE_DEPENDS
     "src/*.cpp" 
     "src/imgui/*.h" 
     "src/imgui/*.cpp" 
-    "src/glad/*.h" 
-    "src/glad/*.c" 
-    "src/glfw/*.h" 
-    "src/glfw/*.cpp" 
-    "src/glm/*.hpp" 
-    "src/glm/*.cpp" 
-    "src/glm/gtc/*.hpp" 
-    "src/glm/gtc/*.cpp"
 )
+
+add_subdirectory(external/glfw)
+add_subdirectory(external/glm)
+
+add_library(glad STATIC external/glad/glad.c)
+target_include_directories(glad PUBLIC external/glad)
+
 add_executable(raytracer ${raytracer_src})
 
 target_link_libraries(raytracer 
+    PRIVATE
     glfw 
+    glad
+    glm
     OpenGL::GL
 )
 

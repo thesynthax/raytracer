@@ -2,8 +2,8 @@
 #define SHADER_H
 
 #include <cwchar>
-#include "glad/glad.h" 
-#include "glm/glm.hpp" 
+#include <glad/glad.h>
+#include <glm/glm.hpp> 
 #include <string>
 #include <fstream>
 #include <sstream>
