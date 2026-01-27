@@ -5,6 +5,7 @@
 #include <string>
 #include <cmath>
 #include <vector>
+#include <algorithm>
 #include "random.h"
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
@@ -93,6 +94,18 @@ struct Light {
 };
 extern std::vector<Sphere> spheres;
 extern std::vector<Light> lights;
+
+struct BVHNodeCPU {
+    glm::vec3 boundsMin;
+    glm::vec3 boundsMax;
+    int left;
+    int right;
+    int sphereIndex;
+};
+extern std::vector<BVHNodeCPU> bvhNodes;
+extern int bvhRoot;
+
+int buildBVH(std::vector<int>& indices);
 
 void initialize(Shader shader, int screenWidth, int screenHeight, int scrTexture);
 void initializeUniforms(Shader shader);

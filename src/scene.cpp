@@ -34,6 +34,9 @@ int accumulatedPasses;
 bool directOutputPass;
 bool refresh;
 
+std::vector<BVHNodeCPU> bvhNodes;
+int bvhRoot;
+
 Camera getCam(float fov, float aspectRatio, glm::vec3 lookFrom, glm::vec3 lookAt, glm::vec3 vup, float rayOriginToScreenDistance) {
     float viewportHeight = rayOriginToScreenDistance * tan(glm::radians(fov)/2.0f)* 2.0f;
     float viewportWidth = viewportHeight * aspectRatio;
@@ -125,6 +128,14 @@ void initialize(Shader shader, int screenWidth, int screenHeight, int scrTexture
     lights.push_back(Light(0, glm::vec3(0), glm::vec3(0), glm::vec3(1), 9, true));
     lights.push_back(Light(1, glm::vec3(0), glm::vec3(0), glm::vec3(1), 1, false));
 
+    bvhNodes.clear();
+
+    std::vector<int> indices;
+    for (int i = 0; i < spheres.size(); i++)
+        indices.push_back(i);
+
+    bvhRoot = buildBVH(indices);
+
     initializeUniforms(shader);
 }
 
@@ -176,6 +187,65 @@ void initializeUniforms(Shader shader) {
     shader.setInt(std::string("u_triangles[").append(std::to_string(0)).append("].mat.type").c_str(), 3);
     shader.setInt(std::string("u_triangles[").append(std::to_string(0)).append("].mat.emissionStrength").c_str(), 9);
     shader.setVec3(std::string("u_triangles[").append(std::to_string(0)).append("].mat.color").c_str(), 1, 1, 1);
+
+    shader.setInt("u_bvhRoot", bvhRoot);
+    shader.setInt("u_bvhNodeCount", (int)bvhNodes.size());
+
+    for (int i = 0; i < bvhNodes.size(); i++) {
+        const auto& n = bvhNodes[i];
+        shader.setVec3(std::string("u_bvhNodes[").append(std::to_string(i)).append("].boundsMin").c_str(), n.boundsMin);
+        shader.setVec3(std::string("u_bvhNodes[").append(std::to_string(i)).append("].boundsMax").c_str(), n.boundsMax);
+        shader.setInt(std::string("u_bvhNodes[").append(std::to_string(i)).append("].left").c_str(), n.left);
+        shader.setInt(std::string("u_bvhNodes[").append(std::to_string(i)).append("].right").c_str(), n.right);
+        shader.setInt(std::string("u_bvhNodes[").append(std::to_string(i)).append("].sphereIndex").c_str(), n.sphereIndex);
+    }
+
+}
+
+int buildBVH(std::vector<int>& indices) {
+    BVHNodeCPU node;
+    node.left = -1;
+    node.right = -1;
+    node.sphereIndex = -1;
+
+    glm::vec3 bmin( INFINITY);
+    glm::vec3 bmax(-INFINITY);
+
+    for (int i : indices) {
+        const Sphere& s = spheres[i];
+        glm::vec3 r(s.radius);
+        bmin = glm::min(bmin, s.center - r);
+        bmax = glm::max(bmax, s.center + r);
+    }
+
+    node.boundsMin = bmin;
+    node.boundsMax = bmax;
+
+    int nodeIndex = bvhNodes.size();
+    bvhNodes.push_back(node);
+
+    if (indices.size() == 1) {
+        bvhNodes[nodeIndex].sphereIndex = indices[0];
+        return nodeIndex;
+    }
+
+    int axis = 0;
+    glm::vec3 size = bmax - bmin;
+    if (size.y > size.x) axis = 1;
+    if (size.z > size[axis]) axis = 2;
+
+    std::sort(indices.begin(), indices.end(), [&](int a, int b) {
+        return spheres[a].center[axis] < spheres[b].center[axis];
+    });
+
+    size_t mid = indices.size() / 2;
+    std::vector<int> left(indices.begin(), indices.begin() + mid);
+    std::vector<int> right(indices.begin() + mid, indices.end());
+
+    bvhNodes[nodeIndex].left  = buildBVH(left);
+    bvhNodes[nodeIndex].right = buildBVH(right);
+
+    return nodeIndex;
 }
 
 double mouseX, mouseY;

@@ -6,7 +6,7 @@ This new raytracer works in real-time by using a fragment shader to compute rayt
 ![](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcXNjemhudndoc2hvamhhYjB0cGtmZHcxZHlpMzgyenc3amljbng0cyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rTU4rTw3FJGBD8UXpf/giphy.gif)
 
 ### To build and run:
-- `git clone https://github.com//thesynthax/raytracer`
+- `git clone https://github.com/thesynthax/raytracer`
 - Build and run with `./run`
 
 ### Goals accomplished:
@@ -21,9 +21,9 @@ This new raytracer works in real-time by using a fragment shader to compute rayt
 - GUI
 - Interaction using mouse
 - Camera Movement
+- BVH Optimized
 
 ### To be accomplished:
 - Progressive Rendering
 - Bloom
 - Mesh import and rendering
-- Optimizations using BVH, LoDs

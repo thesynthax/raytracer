@@ -7,6 +7,8 @@
 #define LIGHT_RADIUS 0.2
 #define OUTLINE_COLOR vec3(0.1f, 1.0f, 0.1f)
 #define OUTLINE_WIDTH 0.04
+#define MAX_BVH_NODES 32
+#define BVH_LEAF -1
 
 in vec2 uv;
 
@@ -38,10 +40,23 @@ uniform int u_accumulatedPasses;
 uniform bool u_directOutputPass;
 uniform int u_framePasses;
 
+
+
 float deg2rad(float deg) {
     float rad = deg * PI / 180.0f;
     return rad;
 }
+
+struct BVHNode {
+    vec3 boundsMin;
+    vec3 boundsMax;
+    int left;
+    int right;
+    int sphereIndex; // >=0 means leaf
+};
+uniform BVHNode u_bvhNodes[MAX_BVH_NODES];
+uniform int u_bvhRoot;
+uniform int u_bvhNodeCount;
 
 struct Camera {
     vec3 position;
@@ -297,8 +312,36 @@ vec3 GetEnvironmentLight(vec3 dir)
     return composite / 1.3f;
 }
 
+HitInfo traverseBVH(Ray ray) {
+    HitInfo closest = initializeHitInfo();
+
+    int stack[32];
+    int stackPtr = 0;
+    stack[stackPtr++] = u_bvhRoot;
+
+    while (stackPtr > 0) {
+        int nodeIndex = stack[--stackPtr];
+        BVHNode node = u_bvhNodes[nodeIndex];
+
+        if (!rayHitBoundingBox(ray, node.boundsMin, node.boundsMax))
+            continue;
+
+        if (node.sphereIndex >= 0) {
+            Sphere sphere = u_spheres[node.sphereIndex];
+            HitInfo hit = sphereIntersection(ray, sphere);
+            if (hit.hit && hit.distance < closest.distance)
+                closest = hit;
+        } else {
+            if (node.left >= 0)  stack[stackPtr++] = node.left;
+            if (node.right >= 0) stack[stackPtr++] = node.right;
+        }
+    }
+
+    return closest;
+}
+
 HitInfo rayCollision(Ray ray) {
-    HitInfo closest = initializeHitInfo(); 
+    /*HitInfo closest = initializeHitInfo(); 
 
     for (int i = 0; i < u_spheres.length(); i++) {
         Sphere sphere = u_spheres[i];
@@ -322,8 +365,11 @@ HitInfo rayCollision(Ray ray) {
         }
     }
 
-    return closest;
+    return closest;*/
+
+    return traverseBVH(ray);
 }
+
 
 float calculatePointLightReach(Light light, float distance) {
     float cutoffIntensity = 0.01;
